@@ -1,0 +1,97 @@
+/* ==========================================================
+   OCEAN FOOD CUSTOM CURSOR
+   JS mouse pointer bo'lgandagina cursor-on klassini qo'shadi.
+   Touch ekranlarda tizim cursoriga xalaqit bermaydi.
+   ========================================================== */
+
+html.cursor-on,
+html.cursor-on * {
+    cursor: none !important;
+}
+
+/* Custom cursor */
+#custom-cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    will-change: transform;
+}
+
+/*
+   hidden=true bo'lsa browser o'zi yashiradi.
+   JS mouse pointer aniqlanganda hidden=false qiladi.
+*/
+#custom-cursor[hidden] {
+    display: none !important;
+}
+
+#custom-cursor img {
+    position: absolute;
+    display: block;
+    width: 46px;
+    height: auto;
+    max-width: none;
+    left: -23px;
+    top: -25px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+    transform-origin: 50% 50%;
+    transition:
+        transform 0.16s var(--ease, ease),
+        opacity 0.16s linear;
+}
+
+#custom-cursor.is-link img {
+    transform: scale(1.22) rotate(-14deg);
+}
+
+#custom-cursor.is-down img {
+    transform: scale(0.84) rotate(8deg);
+}
+
+#custom-cursor[data-mode="text"] img {
+    width: 24px;
+    left: -12px;
+    top: -25px;
+    transform: none;
+}
+
+#custom-cursor.is-away img {
+    opacity: 0;
+}
+
+/* Touch trail */
+#swipe-effect {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/*
+   MUHIM:
+   Bu yerda endi @media (hover:none)/(pointer:coarse) bilan
+   custom cursor yashirilmaydi.
+   
+   Sababi planshetga mouse ulanganida browser pointer=coarse
+   deb turishi mumkin, lekin mouse pointer baribir ishlaydi.
+*/
+
+@media (prefers-reduced-motion: reduce) {
+    #custom-cursor img {
+        transition: none;
+    }
+}
