@@ -1,0 +1,263 @@
+/* ==========================================================
+   СЦЕНА: интерьер Ocean Food
+   Композиция меняется: на desktop — зал в ширину,
+   на телефоне — вертикальная сцена (вывеска → доска → касса/стол → кнопка).
+   Параллакс — через свойство translate (не конфликтует с transform анимаций).
+   ========================================================== */
+
+.room { position: absolute; inset: 0; overflow: hidden; --px: 0; --py: 0; }
+
+/* ---------- стены и пол ---------- */
+.room-wall {
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(46% 38% at 18% 0%, rgba(255, 184, 28, 0.26), transparent 70%),
+        radial-gradient(46% 38% at 82% 0%, rgba(255, 184, 28, 0.22), transparent 70%),
+        radial-gradient(70% 50% at 50% 30%, rgba(27, 155, 224, 0.12), transparent 70%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.022) 0 2px, transparent 2px 72px),
+        linear-gradient(180deg, #0e2a52 0%, #0a1d3b 60%, #08162c 100%);
+}
+.room-wainscot {
+    position: absolute; left: 0; right: 0;
+    bottom: 29%; height: 24%;
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 22%, transparent 80%, rgba(0, 0, 0, 0.25)),
+        conic-gradient(from 45deg at 50% 50%, rgba(255, 255, 255, 0.1) 0 25%, transparent 0 50%, rgba(255, 255, 255, 0.1) 0 75%, transparent 0) 0 0 / 44px 44px,
+        linear-gradient(180deg, #1380bd, #0d5c93);
+    border-top: 10px solid var(--wood-1);
+    box-shadow: 0 -4px 0 var(--wood-3), 0 -18px 30px -10px rgba(0, 0, 0, 0.5);
+}
+.room-floor {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 29%;
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 38%),
+        radial-gradient(60% 80% at 50% 100%, rgba(255, 184, 28, 0.16), transparent 70%),
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 110px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 54px),
+        linear-gradient(180deg, var(--wood-2), var(--wood-3));
+}
+.room-vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(3, 8, 18, 0.65));
+}
+
+/* ---------- сцена-контейнер ---------- */
+.stage { position: absolute; inset: 0; width: min(1500px, 100%); margin: 0 auto; }
+
+.layer {
+    position: absolute;
+    translate: calc(var(--px) * var(--d, 0) * -1px) calc(var(--py) * var(--d, 0) * -0.6px);
+    transition: translate 0.35s var(--ease);
+}
+
+/* ---------- появление: одноразовое, поочерёдно ---------- */
+.prop, .sign, .window { animation: reveal 0.8s var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms + 250ms); }
+.layer--sign .sign { animation-delay: 150ms; }
+@keyframes reveal { from { opacity: 0; transform: translateY(26px) scale(0.97); } }
+
+/* ---------- лампы ---------- */
+.layer--lamp-l { left: 32%; top: 0; }
+.layer--lamp-r { right: 31%; top: 0; }
+.lamp { position: relative; width: 74px; height: calc(var(--lamp-h, 13vh) + 40px); display: flex; justify-content: center; }
+.lamp::before { content: ""; width: 2px; height: var(--lamp-h, 13vh); background: rgba(255, 242, 212, 0.45); }
+.layer--lamp-r .lamp { --lamp-h: 9vh; }
+.lamp i {
+    position: absolute; left: 7px; right: 7px; top: var(--lamp-h, 13vh);
+    height: 38px;
+    clip-path: polygon(24% 0, 76% 0, 100% 100%, 0 100%);
+    background: linear-gradient(180deg, #ffe08a, var(--yellow) 60%, #c98a06);
+}
+.lamp i::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: 0; height: 8px; background: #fff7d1; opacity: 0.9; }
+.lamp::after {
+    content: ""; position: absolute; left: 50%; top: calc(var(--lamp-h, 13vh) + 20px);
+    width: 340px; height: 340px; translate: -50% 0;
+    background: radial-gradient(closest-side, rgba(255, 196, 70, 0.34), rgba(255, 196, 70, 0.1) 55%, transparent);
+    pointer-events: none; mix-blend-mode: screen;
+    animation: lamp-breathe 7s ease-in-out infinite;
+}
+@keyframes lamp-breathe { 50% { opacity: 0.8; } }
+
+/* ---------- вывеска ---------- */
+.layer--sign { left: 50%; top: calc(var(--safe-top) + 62px); margin-left: calc(var(--sign) / -2); width: var(--sign); --sign: clamp(112px, 25vh, 230px); }
+.sign { position: relative; width: var(--sign); height: var(--sign); border-radius: 26%; overflow: hidden; box-shadow: 0 0 0 4px var(--yellow), 0 0 0 7px #7a4a10, 0 24px 46px -12px rgba(0, 0, 0, 0.8), 0 0 80px -10px rgba(255, 184, 28, 0.35); }
+.sign img { width: 100%; height: 100%; object-fit: cover; }
+.sign-slogan {
+    position: absolute; left: 50%; top: calc(var(--sign) + 16px); translate: -50% 0;
+    width: max-content; max-width: 84vw;
+    text-align: center;
+    font-family: var(--f-accent); font-size: clamp(15px, 2.2vh, 22px); letter-spacing: 0.12em;
+    color: var(--yellow-soft); text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+/* ---------- окно ---------- */
+.layer--window { left: 3%; top: calc(var(--safe-top) + 72px); width: clamp(190px, 21vw, 320px); }
+.window { width: 100%; height: auto; filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.55)); }
+.window .waves { animation: waves 16s linear infinite; }
+.window .waves path:nth-child(2) { animation: waves-b 11s ease-in-out infinite alternate; }
+@keyframes waves { to { transform: translateX(60px); } }
+@keyframes waves-b { to { transform: translateX(-30px); } }
+
+/* ---------- кликабельные предметы ---------- */
+.prop { position: relative; display: block; border-radius: 18px; }
+.hot { transition: transform 0.35s var(--ease), filter 0.35s var(--ease); }
+.hot:hover { transform: translateY(-6px); filter: brightness(1.12) drop-shadow(0 0 22px rgba(255, 184, 28, 0.4)); }
+.hot:active { transform: translateY(-1px) scale(0.975); transition-duration: 0.12s; }
+
+.tag {
+    position: absolute; left: 50%; bottom: -16px; translate: -50% 0;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--yellow); color: var(--navy-950);
+    font-family: var(--f-display); font-size: 12px; letter-spacing: 0.1em; line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 4px 0 #b27800, 0 10px 20px -6px rgba(0, 0, 0, 0.6);
+    transition: transform 0.3s var(--ease);
+}
+.tag::after { content: ""; position: absolute; inset: -5px; border-radius: inherit; border: 2px solid var(--yellow); opacity: 0; animation: ping 2.4s var(--ease) 1.6s 2; }
+@keyframes ping { 0% { opacity: 0.8; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.35); } }
+.hot:hover .tag { transform: translateY(-3px); }
+
+/* ---------- доска меню ---------- */
+.layer--board { right: 4%; top: calc(var(--safe-top) + 66px); width: clamp(240px, 25vw, 380px); }
+.board { padding-top: 34px; --tilt: 0deg; }
+.board:hover { transform: translateY(-4px) rotate(-0.8deg); }
+.board-chains { position: absolute; left: 14%; right: 14%; top: 0; height: 38px; display: flex; justify-content: space-between; pointer-events: none; }
+.board-chains i { width: 3px; height: 100%; background: repeating-linear-gradient(180deg, #c9d6e2 0 5px, #6c7f92 5px 8px); border-radius: 2px; }
+.board-frame {
+    display: block; padding: 12px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--wood-1), var(--wood-3));
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18), var(--shadow-lg);
+}
+.board-slate {
+    display: block; padding: 16px 18px 14px; border-radius: 8px;
+    background:
+        radial-gradient(120% 90% at 30% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
+        linear-gradient(180deg, #11263a, #0b1a29);
+    box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.7);
+}
+.board-title { display: block; text-align: center; font-family: var(--f-display); font-size: clamp(24px, 3vh, 32px); letter-spacing: 0.1em; color: var(--yellow); }
+.board-rule { display: block; height: 3px; margin: 8px auto 10px; width: 56%; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--cream-dim), transparent); opacity: 0.6; }
+.board-list { display: grid; gap: 7px; }
+.board-list li { display: flex; align-items: baseline; gap: 8px; font-family: var(--f-body); font-size: clamp(13px, 1.9vh, 17px); letter-spacing: 0.06em; color: var(--cream); }
+.board-list .n { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.board-list .dots { flex: 1; min-width: 12px; border-bottom: 2px dotted rgba(255, 242, 212, 0.35); translate: 0 -3px; }
+.board-list .p { font-family: var(--f-display); color: var(--yellow-soft); font-size: 0.92em; white-space: nowrap; }
+.board-list li:nth-child(n+7) { display: none; }
+
+/* ---------- касса ---------- */
+.layer--counter { left: 3%; bottom: 6.5%; width: clamp(290px, 32vw, 500px); }
+.counter { padding-top: 6%; }
+.counter .register { position: relative; z-index: 2; width: 42%; margin: 0 auto 0 8%; margin-bottom: -4.5%; filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.45)); transition: transform 0.35s var(--ease); }
+.counter:hover .register { transform: translateY(-3px) rotate(-1deg); }
+.counter .bell { position: absolute; z-index: 2; width: 12%; right: 12%; top: 33%; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.45)); }
+.counter-slab { position: relative; z-index: 1; display: block; height: 22px; border-radius: 10px 10px 4px 4px; background: linear-gradient(180deg, #d79a5f, var(--wood-1)); box-shadow: 0 6px 0 var(--wood-3), 0 -1px 0 rgba(255, 255, 255, 0.4) inset; }
+.counter-front {
+    display: block; height: clamp(86px, 14vh, 150px); margin: 6px 10px 0;
+    border-radius: 0 0 14px 14px;
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 25%),
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.26) 0 3px, transparent 3px 26px),
+        linear-gradient(180deg, var(--wood-2), var(--wood-3));
+    box-shadow: var(--shadow-lg);
+    border-bottom: 14px solid;
+    border-image: repeating-linear-gradient(90deg, var(--red) 0 28px, var(--cream) 28px 56px) 1;
+}
+
+/* ---------- стол ---------- */
+.layer--table { right: 3%; bottom: 5%; width: clamp(290px, 31vw, 470px); }
+.table svg { width: 100%; height: auto; filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.35)); overflow: visible; }
+.table .chair { transition: transform 0.45s var(--ease); transform-box: fill-box; }
+.table:hover .chair--l { transform: translateX(-9px) rotate(-3deg); }
+.table:hover .chair--r { transform: translateX(9px) rotate(3deg); }
+.table:hover { transform: none; filter: brightness(1.1); }
+.say {
+    position: absolute; left: 50%; bottom: 82%; translate: -50% 0;
+    width: max-content; max-width: min(250px, 70vw);
+    padding: 11px 16px; border-radius: 16px;
+    background: var(--cream); color: var(--navy-950);
+    font-family: var(--f-body); font-size: 14px; line-height: 1.25; letter-spacing: 0.05em; text-align: center;
+    box-shadow: var(--shadow-lg);
+    opacity: 0; pointer-events: none;
+    transform: translateY(10px) scale(0.92); transform-origin: 50% 100%;
+    transition: opacity 0.25s var(--ease), transform 0.4s var(--ease);
+}
+.say::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -9px; border: 9px solid transparent; border-top-color: var(--cream); }
+.table.is-saying .say { opacity: 1; transform: none; }
+
+/* ---------- подвал сцены ---------- */
+.scene-foot {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 10;
+    display: grid; justify-items: center; gap: 12px;
+    padding: 0 calc(var(--safe-right) + 18px) calc(var(--safe-bottom) + 18px) calc(var(--safe-left) + 18px);
+    pointer-events: none;
+}
+.scene-foot > * { pointer-events: auto; }
+.hint {
+    font-family: var(--f-label); font-size: 13px; letter-spacing: 0.18em; text-align: center;
+    color: var(--cream); text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+.cta {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    min-height: 60px; padding: 0 34px;
+    border-radius: 18px;
+    font-family: var(--f-display); font-size: 18px; letter-spacing: 0.1em;
+    color: var(--navy-950);
+    background: linear-gradient(180deg, var(--yellow-soft), var(--yellow));
+    box-shadow: 0 7px 0 #b27800, 0 20px 34px -10px rgba(255, 184, 28, 0.6);
+    transition: transform 0.18s var(--ease), box-shadow 0.25s var(--ease);
+    animation: reveal 0.8s var(--ease) 0.9s both;
+}
+.cta svg { transition: transform 0.3s var(--ease); }
+.cta:hover svg { transform: translateX(5px); }
+.cta:active { transform: translateY(5px); box-shadow: 0 2px 0 #b27800, 0 8px 16px -8px rgba(255, 184, 28, 0.5); }
+
+/* ==========================================================
+   ТЕЛЕФОН: вертикальная композиция
+   Подвал (кнопка) занимает ~96px снизу — предметы стоят строго над ним.
+   ========================================================== */
+@media (max-width: 860px) {
+    .layer--window { display: none; }
+    .layer--lamp-l { left: 7%; }
+    .layer--lamp-r { right: 7%; }
+    .lamp { width: 56px; }
+    .lamp::after { width: 240px; height: 240px; }
+
+    .layer--sign { --sign: clamp(84px, 14vh, 128px); top: calc(var(--safe-top) + 64px); }
+    .sign-slogan { font-size: 14px; top: calc(var(--sign) + 10px); letter-spacing: 0.1em; }
+
+    .layer--board {
+        right: auto; left: 50%;
+        translate: calc(-50% + var(--px) * var(--d) * -1px) 0;
+        width: min(86vw, 350px);
+    }
+    .board-list li:nth-child(n+6) { display: none; }
+    .board-slate { padding: 12px 16px; }
+
+    .layer--counter { left: -3%; bottom: calc(var(--safe-bottom) + 108px); width: min(58vw, 31vh, 330px); min-width: 190px; }
+    .layer--table   { right: -4%; bottom: calc(var(--safe-bottom) + 98px);  width: min(54vw, 30vh, 310px); min-width: 180px; }
+    .counter-front { height: 44px; }
+    .tag { font-size: 11px; padding: 6px 11px; bottom: -14px; }
+    .room-wainscot { bottom: 30%; height: 20%; }
+    .room-floor { height: 30%; }
+    .hint { display: none; }
+    .cta { width: 100%; max-width: 420px; }
+    #scene .brand-text { display: none; }
+}
+@media (max-width: 860px) and (max-height: 700px) {
+    .layer--sign { --sign: 80px; }
+    .sign-slogan { display: none; }
+    .layer--board { top: calc(var(--safe-top) + 64px + 80px + 32px); width: min(80vw, 310px); }
+    .board-list { gap: 5px; }
+    .board-list li:nth-child(n+5) { display: none; }
+    .board-title { font-size: 22px; }
+}
+@media (max-width: 860px) and (min-height: 701px) {
+    .layer--board { top: calc(var(--safe-top) + 64px + clamp(84px, 14vh, 128px) + 62px); }
+}
+/* широкие и низкие экраны (ландшафт телефона) */
+@media (min-width: 861px) and (max-height: 560px) {
+    .layer--sign { --sign: 90px; }
+    .sign-slogan { display: none; }
+    .board-list li:nth-child(n+5) { display: none; }
+    .layer--window { display: none; }
+}

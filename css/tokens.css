@@ -1,0 +1,109 @@
+/* ==========================================================
+   OCEAN FOOD — токены, шрифты, reset
+   Палитра взята с логотипа: тёмно-синий, жёлтый, волна, красный акцент.
+   Шрифты (все 4 — только ЗАГЛАВНЫЕ формы, поэтому тексты держим короткими):
+     Block   — название, цены, кнопки   (жирный, приземистый)
+     Round   — названия блюд, текст     (читается лучше всех)
+     Chisel  — метки, мелкие подписи    (тонкий, с разрядкой)
+     Elegant — слоган                   (курсив, только крупно)
+   ========================================================== */
+@font-face { font-family: "Cafe Block";   src: url("../fonts/CafeBlock.ttf")   format("truetype"); font-display: swap; }
+@font-face { font-family: "Cafe Round";   src: url("../fonts/CafeRound.ttf")   format("truetype"); font-display: swap; }
+@font-face { font-family: "Cafe Chisel";  src: url("../fonts/CafeChisel.ttf")  format("truetype"); font-display: swap; }
+@font-face { font-family: "Cafe Elegant"; src: url("../fonts/CafeElegant.ttf") format("truetype"); font-display: swap; }
+
+:root {
+    --navy-950: #06101f;
+    --navy-900: #0a1b36;
+    --navy-800: #10284a;
+    --navy-700: #183b68;
+    --line: rgba(255, 242, 212, 0.12);
+
+    --yellow: #ffb81c;
+    --yellow-soft: #ffd56b;
+    --blue: #1b9be0;
+    --blue-deep: #0f6aa8;
+    --red: #e0392b;
+    --red-deep: #a81f14;
+    --cream: #fff2d4;
+    --cream-dim: #d9cba8;
+    --orange-touch: #f28c28;
+
+    --wood-1: #b87942;
+    --wood-2: #8a5329;
+    --wood-3: #5b3216;
+
+    --f-display: "Cafe Block", "Arial Black", Impact, sans-serif;
+    --f-body: "Cafe Round", "Arial Rounded MT Bold", Arial, sans-serif;
+    --f-label: "Cafe Chisel", Arial, sans-serif;
+    --f-accent: "Cafe Elegant", Georgia, serif;
+
+    /* безопасные зоны: iPhone + Telegram (вкл. fullscreen) */
+    --safe-top: calc(max(env(safe-area-inset-top, 0px), var(--tg-safe-area-inset-top, 0px)) + var(--tg-content-safe-area-inset-top, 0px));
+    --safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px));
+    --safe-left: max(env(safe-area-inset-left, 0px), var(--tg-safe-area-inset-left, 0px));
+    --safe-right: max(env(safe-area-inset-right, 0px), var(--tg-safe-area-inset-right, 0px));
+
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+    --shadow-lg: 0 24px 60px -18px rgba(0, 0, 0, 0.7), 0 8px 18px -8px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 14px 30px -14px rgba(0, 0, 0, 0.65);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    background: var(--navy-950);
+}
+
+body {
+    height: var(--tg-vh, 100vh);
+    height: var(--tg-vh, 100dvh);
+    overflow: hidden;
+    overscroll-behavior: none;
+
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.35;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    background: var(--navy-950);
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+button, input { font: inherit; color: inherit; letter-spacing: inherit; }
+button { background: none; border: 0; cursor: pointer; touch-action: manipulation; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+ul { list-style: none; }
+
+[hidden] { display: none !important; }
+
+/* выделение текста — только в полях, как в нативном приложении */
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea, .selectable { -webkit-user-select: text; user-select: text; }
+
+/* фокус с клавиатуры — заметный, но в стиле */
+:focus { outline: none; }
+:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 3px;
+    border-radius: 12px;
+}
+
+::selection { background: var(--yellow); color: var(--navy-950); }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
